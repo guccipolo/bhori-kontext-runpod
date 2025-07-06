@@ -48,7 +48,11 @@ class EndpointHandler:
             image_bytes = base64.b64decode(image_input)
             image = Image.open(BytesIO(image_bytes)).convert("RGB")
         except Exception as e:
-            return {"error": f"Failed to decode 'image' as base64 PNG: {str(e)}"}
+            return {"error": f"Failed to decode 'image' as base64: {str(e)}"}
+
+        # Debug prints for prompt and image size
+        print(f"📝 Final prompt: {prompt}")
+        print(f"🖼️ Image size: {image.size}")
 
         # Generate edited image with Kontext
         try:
