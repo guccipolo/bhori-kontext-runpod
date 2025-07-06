@@ -15,9 +15,14 @@ class EndpointHandler:
             torch_dtype=torch.float16,
         )
 
+        # Diagnostic print to inspect available methods
+        print("🔍 Available methods on pipeline:", dir(self.pipe))
+
         # Load your local LoRA file
         try:
             lora_path = "./Bh0r1.safetensors"  # relative path within the container
+
+            # Attempt to load LoRA weights (will fail if unsupported)
             self.pipe.load_lora_weights(lora_path)
             print(f"✅ LoRA weights loaded from {lora_path}.")
         except Exception as e:
