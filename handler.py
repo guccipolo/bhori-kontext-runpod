@@ -9,13 +9,23 @@ class EndpointHandler:
     def __init__(self, path: str = ""):
         print("🚀 Initializing Flux Kontext pipeline...")
 
-        # Load Flux Kontext model
+        # Load base model from Hugging Face
         self.pipe = FluxKontextPipeline.from_pretrained(
             "black-forest-labs/FLUX.1-Kontext-dev",
             torch_dtype=torch.float16,
         )
+
+        # Load your local LoRA file
+        try:
+            lora_path = "./Bh0r1.safetensors"  # relative path within the container
+            self.pipe.load_lora_weights(lora_path)
+            print(f"✅ LoRA weights loaded from {lora_path}.")
+        except Exception as e:
+            print(f"⚠️ Failed to load LoRA weights: {str(e)}")
+
+        # Move pipeline to GPU if available
         self.pipe.to("cuda" if torch.cuda.is_available() else "cpu")
-        print("✅ Model ready.")
+        print("✅ Model ready with LoRA applied.")
 
     def __call__(self, data: Dict) -> Dict:
         print("🔧 Received raw data type:", type(data))
@@ -23,11 +33,11 @@ class EndpointHandler:
 
         # Defensive parsing
         if isinstance(data, dict):
-            # Some endpoints send data directly as prompt/image dict
+            # Direct prompt/image dict
             prompt = data.get("prompt")
             image_input = data.get("image")
 
-            # If 'inputs' key is used (as per HF Inference default schema)
+            # If 'inputs' key is used (HF Inference schema)
             if prompt is None and image_input is None:
                 inputs = data.get("inputs")
                 if isinstance(inputs, dict):
