@@ -11,7 +11,7 @@ class EndpointHandler:
 
         # Load Flux Kontext model from Hugging Face Hub
         self.pipe = FluxKontextPipeline.from_pretrained(
-            "black-forest-labs/FLUX.1-Kontext-dev",  # replace with your specific Kontext model if different
+            "black-forest-labs/FLUX.1-Kontext-dev",  # replace if using your own model repo
             torch_dtype=torch.float16,
         )
         self.pipe.to("cuda" if torch.cuda.is_available() else "cpu")
@@ -20,40 +20,32 @@ class EndpointHandler:
     def __call__(self, data: Dict) -> Dict:
         print("🔧 Received data:", data)
 
+        # Validate data structure
         inputs = data.get("inputs")
-        if not inputs:
-            return {"error": "'inputs' key missing. Payload must include an 'inputs' dictionary."}
-
-        if not isinstance(inputs, dict):
-            return {"error": "'inputs' must be a JSON object with 'prompt' and optionally 'image'."}
+        if not inputs or not isinstance(inputs, dict):
+            return {"error": "'inputs' must be a JSON object containing 'prompt' and 'image'."}
 
         prompt = inputs.get("prompt")
         image_input = inputs.get("image")
 
         if not prompt:
-            return {"error": "Prompt is required in 'inputs'."}
+            return {"error": "'prompt' is required in 'inputs'."}
+        if not image_input:
+            return {"error": "'image' (base64 encoded string) is required in 'inputs'."}
 
-        # Process image input if provided
-        image = None
-        if image_input:
-            if isinstance(image_input, str):
-                try:
-                    # Assume it's base64 encoded
-                    image_bytes = base64.b64decode(image_input)
-                    image = Image.open(BytesIO(image_bytes)).convert("RGB")
-                except Exception as e:
-                    return {"error": f"Failed to decode base64 image input: {str(e)}"}
-            elif isinstance(image_input, Image.Image):
-                image = image_input
-            else:
-                return {"error": "'image' must be a base64 string or a PIL.Image object."}
+        # Decode image from base64
+        try:
+            image_bytes = base64.b64decode(image_input)
+            image = Image.open(BytesIO(image_bytes)).convert("RGB")
+        except Exception as e:
+            return {"error": f"Failed to decode 'image' input as base64: {str(e)}"}
 
         # Generate edited image with Kontext
         try:
             output = self.pipe(
                 prompt=prompt,
                 image=image,
-                num_inference_steps=28,  # context standard
+                num_inference_steps=28,  # Kontext standard
                 guidance_scale=3.5
             ).images[0]
             print("🎨 Image generated.")
