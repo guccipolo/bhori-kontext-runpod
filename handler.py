@@ -12,7 +12,7 @@ class EndpointHandler:
         # Load Flux Kontext model
         self.pipe = FluxKontextPipeline.from_pretrained(
             "black-forest-labs/FLUX.1-Kontext-dev",
-            torch_dtype=torch.float32,
+            torch_dtype=torch.float16,
         )
         self.pipe.to("cuda" if torch.cuda.is_available() else "cpu")
         print("✅ Model ready.")
