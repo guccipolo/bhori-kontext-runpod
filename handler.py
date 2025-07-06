@@ -9,43 +9,53 @@ class EndpointHandler:
     def __init__(self, path: str = ""):
         print("🚀 Initializing Flux Kontext pipeline...")
 
-        # Load Flux Kontext model from Hugging Face Hub
+        # Load Flux Kontext model
         self.pipe = FluxKontextPipeline.from_pretrained(
-            "black-forest-labs/FLUX.1-Kontext-dev",  # replace if using your own model repo
+            "black-forest-labs/FLUX.1-Kontext-dev",
             torch_dtype=torch.float16,
         )
         self.pipe.to("cuda" if torch.cuda.is_available() else "cpu")
         print("✅ Model ready.")
 
     def __call__(self, data: Dict) -> Dict:
-        print("🔧 Received data:", data)
+        print("🔧 Received raw data type:", type(data))
+        print("🔧 Received raw data content:", data)
 
-        # Validate data structure
-        inputs = data.get("inputs")
-        if not inputs or not isinstance(inputs, dict):
-            return {"error": "'inputs' must be a JSON object containing 'prompt' and 'image'."}
+        # Defensive parsing
+        if isinstance(data, dict):
+            # Some endpoints send data directly as prompt/image dict
+            prompt = data.get("prompt")
+            image_input = data.get("image")
 
-        prompt = inputs.get("prompt")
-        image_input = inputs.get("image")
+            # If 'inputs' key is used (as per HF Inference default schema)
+            if prompt is None and image_input is None:
+                inputs = data.get("inputs")
+                if isinstance(inputs, dict):
+                    prompt = inputs.get("prompt")
+                    image_input = inputs.get("image")
+                else:
+                    return {"error": "Expected 'inputs' to be a JSON object containing 'prompt' and 'image'."}
+        else:
+            return {"error": "Input payload must be a JSON object."}
 
         if not prompt:
-            return {"error": "'prompt' is required in 'inputs'."}
+            return {"error": "Missing 'prompt' in input data."}
         if not image_input:
-            return {"error": "'image' (base64 encoded string) is required in 'inputs'."}
+            return {"error": "Missing 'image' (base64) in input data."}
 
         # Decode image from base64
         try:
             image_bytes = base64.b64decode(image_input)
             image = Image.open(BytesIO(image_bytes)).convert("RGB")
         except Exception as e:
-            return {"error": f"Failed to decode 'image' input as base64: {str(e)}"}
+            return {"error": f"Failed to decode 'image' as base64 PNG: {str(e)}"}
 
         # Generate edited image with Kontext
         try:
             output = self.pipe(
                 prompt=prompt,
                 image=image,
-                num_inference_steps=28,  # Kontext standard
+                num_inference_steps=28,
                 guidance_scale=3.5
             ).images[0]
             print("🎨 Image generated.")
