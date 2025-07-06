@@ -1,13 +1,10 @@
 ---
 tags:
-- text-to-image
+- image-to-image
 - lora
 - diffusers
 - template:diffusion-lora
 widget:
-- output:
-    url: images/ComfyUI_00174_.png
-  text: '-'
 - output:
     url: images/ComfyUI_00174_.png
   text: '-'
