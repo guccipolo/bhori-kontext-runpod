@@ -15,16 +15,16 @@ class EndpointHandler:
             torch_dtype=torch.float16,
         )
 
-        # Diagnostic print to inspect available methods
+        # Debug available methods on pipeline
         print("🔍 Available methods on pipeline:", dir(self.pipe))
 
-        # Load your local LoRA file
+        # Load your LoRA weights from your Hugging Face repo
         try:
-            lora_path = "./Bh0r1.safetensors"  # relative path within the container
-
-            # Attempt to load LoRA weights (will fail if unsupported)
-            self.pipe.load_lora_weights(lora_path)
-            print(f"✅ LoRA weights loaded from {lora_path}.")
+            self.pipe.load_lora_weights(
+                "Texttra/BhoriKontext",
+                weight_name="Bh0r1.safetensors"
+            )
+            print("✅ LoRA weights loaded from Texttra/BhoriKontext/Bh0r1.safetensors.")
         except Exception as e:
             print(f"⚠️ Failed to load LoRA weights: {str(e)}")
 
@@ -38,7 +38,6 @@ class EndpointHandler:
 
         # Defensive parsing
         if isinstance(data, dict):
-            # Direct prompt/image dict
             prompt = data.get("prompt")
             image_input = data.get("image")
 
