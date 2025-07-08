@@ -3,7 +3,7 @@ import torch
 from diffusers import FluxKontextPipeline
 from io import BytesIO
 import base64
-from PIL import Image
+from PIL import Image, ImageOps  # Updated import
 
 class EndpointHandler:
     def __init__(self, path: str = ""):
@@ -57,10 +57,11 @@ class EndpointHandler:
         if not image_input:
             return {"error": "Missing 'image' (base64) in input data."}
 
-        # Decode image from base64
+        # Decode image from base64 and correct orientation
         try:
             image_bytes = base64.b64decode(image_input)
             image = Image.open(BytesIO(image_bytes)).convert("RGB")
+            image = ImageOps.exif_transpose(image)  # Correct EXIF orientation here
         except Exception as e:
             return {"error": f"Failed to decode 'image' as base64: {str(e)}"}
 
