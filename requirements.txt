@@ -1,1 +1,7 @@
+torch
+torchvision
+torchaudio
+transformers
 git+https://github.com/huggingface/diffusers.git
+Pillow
+numpy
