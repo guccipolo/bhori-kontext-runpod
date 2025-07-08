@@ -3,7 +3,8 @@ import torch
 from diffusers import FluxKontextPipeline
 from io import BytesIO
 import base64
-from PIL import Image, ImageOps  # Updated import
+from PIL import Image, ImageOps
+import numpy as np  # Added import
 
 class EndpointHandler:
     def __init__(self, path: str = ""):
@@ -78,6 +79,13 @@ class EndpointHandler:
                 guidance_scale=2.0
             ).images[0]
             print("🎨 Image generated.")
+
+            # 💡 HARD CLAMP pixel values to [0, 255] to prevent NaN/black outputs
+            output_array = np.array(output)
+            output_array = np.clip(output_array, 0, 255).astype(np.uint8)
+            output = Image.fromarray(output_array)
+            print("🛑 Hard clamped output pixel values to [0, 255].")
+
         except Exception as e:
             return {"error": f"Model inference failed: {str(e)}"}
 
