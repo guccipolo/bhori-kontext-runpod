@@ -75,7 +75,7 @@ class EndpointHandler:
             output = self.pipe(
                 prompt=prompt,
                 image=image,
-                num_inference_steps=20,
+                num_inference_steps=35,
                 guidance_scale=2.0
             ).images[0]
             print("🎨 Image generated.")
