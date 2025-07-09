@@ -13,7 +13,7 @@ class EndpointHandler:
         # Load base model from Hugging Face
         self.pipe = FluxKontextPipeline.from_pretrained(
             "black-forest-labs/FLUX.1-Kontext-dev",
-            torch_dtype=torch.float16,
+            torch_dtype=torch.float8,
         )
 
         # Debug available methods on pipeline
