@@ -23,7 +23,7 @@ class EndpointHandler:
         try:
             self.pipe.load_lora_weights(
                 "Texttra/BhoriKontext",
-                weight_name="Bh0r1.safetensors"
+                weight_name="Bh0r12.safetensors"
             )
             print("✅ LoRA weights loaded from Texttra/BhoriKontext/Bh0r1.safetensors.")
         except Exception as e:
