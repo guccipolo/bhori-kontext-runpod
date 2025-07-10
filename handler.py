@@ -76,7 +76,7 @@ class EndpointHandler:
                 prompt=prompt,
                 image=image,
                 num_inference_steps=35,
-                guidance_scale=2.0
+                guidance_scale=4.0
             ).images[0]
             print("🎨 Image generated.")
 
