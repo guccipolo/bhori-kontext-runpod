@@ -25,7 +25,7 @@ class EndpointHandler:
                 "Texttra/BhoriKontext",
                 weight_name="Bh0r12.safetensors"
             )
-            print("✅ LoRA weights loaded from Texttra/BhoriKontext/Bh0r1.safetensors.")
+            print("✅ LoRA weights loaded from Texttra/BhoriKontext/Bh0r12.safetensors.")
         except Exception as e:
             print(f"⚠️ Failed to load LoRA weights: {str(e)}")
 
