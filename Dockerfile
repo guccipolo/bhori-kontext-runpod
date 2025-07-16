@@ -1,9 +1,14 @@
-dockerfile# Use their container but run your handler
+# Use their container but run your handler
 FROM valyriantech/comfyui-with-flux:latest
 
-# Remove ComfyUI startup, add your handler  
+WORKDIR /app
+
+# Copy your handler
 COPY handler.py .
+COPY . .
+
+# Install runpod 
 RUN pip install runpod
 
-# Your handler uses the pre-installed Flux model
+# Run your handler instead of ComfyUI
 CMD ["python", "-u", "handler.py"]
