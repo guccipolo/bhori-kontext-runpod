@@ -2,7 +2,11 @@ torch==2.1.2
 torchvision==0.16.2
 torchaudio==2.1.2
 transformers==4.41.2
+accelerate>=0.26.0
+safetensors>=0.4.0
 git+https://github.com/huggingface/diffusers.git
 Pillow==10.3.0
 numpy==1.26.4
 runpod
+xformers
+huggingface_hub

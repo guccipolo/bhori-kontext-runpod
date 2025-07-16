@@ -19,12 +19,12 @@ class ModelHandler:
     def load_models(self):
         print("🚀 Initializing Flux Kontext pipeline...")
         
-        # Load base model from Hugging Face
+        # Load base model from Hugging Face without fp16 variant
         self.pipe = FluxKontextPipeline.from_pretrained(
             "black-forest-labs/FLUX.1-Kontext-dev",
             torch_dtype=torch.bfloat16,
-            variant="fp16",
             use_safetensors=True,
+            # Remove variant="fp16" - not available for Flux Kontext
         )
 
         # Load LoRA weights from local files
