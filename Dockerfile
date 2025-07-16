@@ -1,15 +1,19 @@
-FROM runpod/python:3.10-ubuntu
+# Use the correct RunPod base image for PyTorch
+FROM runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel
 
+# Set working directory
 WORKDIR /app
 
-# Copy files into container
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install runpod
+
+# Copy all files
 COPY . .
 
-# Install dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
-# Required: install 'runpod' serverless package
-RUN pip install runpod
-
-# Set the serverless handler
-CMD ["python", "handler.py"]
+# Set the handler
+CMD ["python", "-u", "handler.py"]
