@@ -15,5 +15,8 @@ RUN pip install --upgrade pip && \
 # Copy all files
 COPY . .
 
+# Download model weights during build (like SDXL template)
+RUN python download_weights.py
+
 # Set the handler
 CMD ["python", "-u", "handler.py"]
