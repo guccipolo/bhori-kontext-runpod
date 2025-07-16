@@ -10,4 +10,6 @@ numpy==1.26.4
 runpod
 xformers
 huggingface_hub
-sentencepiece
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+tokenizers>=0.13.0

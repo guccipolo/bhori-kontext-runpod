@@ -7,9 +7,10 @@ WORKDIR /app
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies with force reinstall for tokenizers
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir --force-reinstall sentencepiece tokenizers && \
     pip install runpod
 
 # Copy all files
