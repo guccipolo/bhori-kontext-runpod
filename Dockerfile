@@ -17,10 +17,10 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Install protobuf first, then everything else
+# Install protobuf first, then specific working versions
 RUN pip3 install --upgrade pip --no-cache-dir
 RUN pip3 install --upgrade setuptools --no-cache-dir  
-RUN pip3 install protobuf>=3.20.0 --no-cache-dir
+RUN pip3 install protobuf==3.20.3 --no-cache-dir
 RUN pip3 install -r requirements.txt --no-cache-dir
 
 COPY . .
