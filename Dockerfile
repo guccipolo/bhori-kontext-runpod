@@ -11,8 +11,6 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     wget \
-    protobuf-compiler \
-    libprotobuf-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Make python3.10 default
@@ -22,9 +20,12 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Install packages without cache and with specific versions
-RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel
+# Install key packages in order to avoid conflicts
+RUN python3 -m pip install --no-cache-dir --upgrade pip
 RUN python3 -m pip install --no-cache-dir protobuf==3.20.3
+RUN python3 -m pip install --no-cache-dir transformers==4.44.0
+RUN python3 -m pip install --no-cache-dir diffusers==0.25.0
+RUN python3 -m pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu118
 RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 COPY . .
