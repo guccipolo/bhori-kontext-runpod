@@ -9,14 +9,18 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     wget \
+    protobuf-compiler \
+    libprotobuf-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY requirements.txt .
 
+# Install protobuf first, then everything else
 RUN pip3 install --upgrade pip --no-cache-dir
 RUN pip3 install --upgrade setuptools --no-cache-dir  
+RUN pip3 install protobuf>=3.20.0 --no-cache-dir
 RUN pip3 install -r requirements.txt --no-cache-dir
 
 COPY . .
