@@ -5,6 +5,8 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y \
     python3.10 \
+    python3.10-venv \
+    python3.10-dev \
     python3-pip \
     git \
     curl \
@@ -13,15 +15,17 @@ RUN apt-get update && apt-get install -y \
     libprotobuf-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Make python3.10 default
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+
 WORKDIR /app
 
 COPY requirements.txt .
 
-# Install protobuf first, then specific working versions
-RUN pip3 install --upgrade pip --no-cache-dir
-RUN pip3 install --upgrade setuptools --no-cache-dir  
-RUN pip3 install protobuf==3.20.3 --no-cache-dir
-RUN pip3 install -r requirements.txt --no-cache-dir
+# Install packages without cache and with specific versions
+RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel
+RUN python3 -m pip install --no-cache-dir protobuf==3.20.3
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
